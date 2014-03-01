@@ -6,7 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import javax.swing.event.ListSelectionEvent;
 
 import org.apache.tika.Tika;
 import org.apache.tika.exception.TikaException;
@@ -21,6 +24,8 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
+import com.google.common.collect.Lists;
+
 public class SimpleTextExtractor {
 
 	public static void main(String[] args) throws Exception {
@@ -33,11 +38,11 @@ public class SimpleTextExtractor {
 		 * File(file)); System.out.print(text); }
 		 */
 		File file = new File(
-				"/Users/king/Documents/WhatIHaveDone/TingJiangZuo/csdn/data/_meeting_info_674_community");
-		System.out.println(fileToTxt(file));
+				"/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data/_meeting_info_674_community.html");
+		System.out.println(new SimpleTextExtractor().fileToTxt(file));
 	}
 
-	public static String fileToTxt(File f) {
+	public String fileToTxt(File f) {
 		Parser parser = new AutoDetectParser();
 		InputStream is = null;
 		try {
@@ -46,7 +51,7 @@ public class SimpleTextExtractor {
 			metadata.set(Metadata.RESOURCE_NAME_KEY, f.getName());
 			is = new FileInputStream(f);
 			// ContentHandler handler = new BodyContentHandler();
-			ContentHandler handler = new CsdnHandler();
+			ContentHandler handler = initHandler();
 			ParseContext context = new ParseContext();
 			context.set(Parser.class, parser);
 			context.set(HtmlMapper.class, new MyHtmlMapper());
@@ -72,6 +77,14 @@ public class SimpleTextExtractor {
 			}
 		}
 		return null;
+	}
+
+	private ContentHandler initHandler() {
+		List<AbstractBaseHandler> handlers = Lists.newArrayList();
+		handlers.add(new CsdnTitleHandler("div", "h1"));
+		handlers.add(new CsdnContentHandler("div"));
+		handlers.add(new CsdnAddressHandler("div"));
+		return new CsdnHandler(handlers);
 	}
 
 	public static class MyHtmlMapper extends DefaultHtmlMapper {

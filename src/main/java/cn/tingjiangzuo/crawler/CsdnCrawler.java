@@ -25,8 +25,8 @@ public class CsdnCrawler extends WebCrawler {
 					+ "|png|tiff?|mid|mp2|mp3|mp4"
 					+ "|wav|avi|mov|mpeg|ram|m4v|pdf"
 					+ "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
-	public static final String CRAWL_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/TingJiangZuo/csdn";
-	public static final String DATA_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/TingJiangZuo/csdn/data";
+	public static final String CRAWL_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn";
+	public static final String DATA_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data";
 	public static final String SITE_PREFIX = "http://huiyi.csdn.net/meeting/info";
 	public static final String SITE_SEED = "http://huiyi.csdn.net/meeting";
 
