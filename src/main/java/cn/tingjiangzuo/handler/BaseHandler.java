@@ -1,16 +1,20 @@
-package cn.tingjiangzuo;
+package cn.tingjiangzuo.handler;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tika.sax.ContentHandlerDecorator;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public class CsdnHandler extends ContentHandlerDecorator {
+public class BaseHandler extends ContentHandlerDecorator {
 
 	private List<AbstractBaseHandler> handlers;
 
-	public CsdnHandler(List<AbstractBaseHandler> handlers) {
+	private Map<String, String> resultingMap = new HashMap<>();
+
+	public BaseHandler(List<AbstractBaseHandler> handlers) {
 		this.handlers = handlers;
 	}
 
@@ -38,14 +42,18 @@ public class CsdnHandler extends ContentHandlerDecorator {
 		}
 	}
 
+	public Map<String, String> getParsedResults() {
+		if (!resultingMap.isEmpty()) {
+			return resultingMap;
+		}
+		for (AbstractBaseHandler handler : handlers) {
+			resultingMap.putAll(handler.getParsedResults());
+		}
+		return resultingMap;
+	}
+	
 	@Override
 	public String toString() {
-	StringBuilder stringBuilder = new StringBuilder();
-		for (AbstractBaseHandler handler : handlers) {
-			stringBuilder.append(handler.getClass().getName() + ":\n");
-			stringBuilder.append(handler.toString());
-			stringBuilder.append("-------------------------------------------");
-		}
-		return stringBuilder.toString();
+		return getParsedResults().toString();
 	}
 }

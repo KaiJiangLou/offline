@@ -6,7 +6,8 @@ import java.io.FileWriter;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.xml.crypto.Data;
+import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
@@ -59,18 +60,23 @@ public class CsdnCrawler extends WebCrawler {
 		}
 	}
 
-	private void writeToFile(Page page, HtmlParseData htmlParseData) throws Exception {
+	private void writeToFile(Page page, HtmlParseData htmlParseData)
+			throws Exception {
 		File dataDir = new File(DATA_STORAGE_FOLDER);
 		if (!dataDir.exists()) {
 			if (!dataDir.mkdir()) {
-				throw new Exception("Couldn't create this folder: " + dataDir.getAbsolutePath());
+				throw new Exception("Couldn't create this folder: "
+						+ dataDir.getAbsolutePath());
 			}
 		}
+		JSONStringer theWebPage = new JSONStringer();
+		theWebPage.object().key("url").value(page.getWebURL().getURL())
+				.key("content").value(htmlParseData.getHtml()).endObject();
 		String fileName = page.getWebURL().getPath();
 		fileName = fileName.replaceAll("/", "_");
 		File dataFile = new File(dataDir, fileName);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(dataFile));
-		writer.write(htmlParseData.getHtml());
+		writer.write(theWebPage.toString());
 		writer.close();
 	}
 }

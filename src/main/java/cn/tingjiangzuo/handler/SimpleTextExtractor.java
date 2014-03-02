@@ -1,10 +1,14 @@
-package cn.tingjiangzuo;
+package cn.tingjiangzuo.handler;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +25,9 @@ import org.apache.tika.parser.feed.FeedParser;
 import org.apache.tika.parser.html.DefaultHtmlMapper;
 import org.apache.tika.parser.html.HtmlMapper;
 import org.apache.tika.sax.BodyContentHandler;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
@@ -38,20 +45,23 @@ public class SimpleTextExtractor {
 		 * File(file)); System.out.print(text); }
 		 */
 		File file = new File(
-				"/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data/_meeting_info_674_community.html");
+				"/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data/_meeting_info_681_biz");
 		System.out.println(new SimpleTextExtractor().fileToTxt(file));
 	}
 
-	public String fileToTxt(File f) {
+	public String fileToTxt(File f) throws FileNotFoundException, JSONException {
+		JSONObject jsonObject = new JSONObject(new JSONTokener(new FileReader(f)));
+		String url = jsonObject.getString("url");
+		String content = jsonObject.getString("content");
 		Parser parser = new AutoDetectParser();
 		InputStream is = null;
 		try {
 			Metadata metadata = new Metadata();
 			metadata.set(Metadata.AUTHOR, "空号");
 			metadata.set(Metadata.RESOURCE_NAME_KEY, f.getName());
-			is = new FileInputStream(f);
+			is = new ByteArrayInputStream(content.getBytes("UTF-8"));
 			// ContentHandler handler = new BodyContentHandler();
-			ContentHandler handler = initHandler();
+			BaseHandler handler = initHandler();
 			ParseContext context = new ParseContext();
 			context.set(Parser.class, parser);
 			context.set(HtmlMapper.class, new MyHtmlMapper());
@@ -79,12 +89,12 @@ public class SimpleTextExtractor {
 		return null;
 	}
 
-	private ContentHandler initHandler() {
+	private BaseHandler initHandler() {
 		List<AbstractBaseHandler> handlers = Lists.newArrayList();
-		handlers.add(new CsdnTitleHandler("div", "h1"));
-		handlers.add(new CsdnContentHandler("div"));
+		handlers.add(new CsdnTitleHandler("div", "h1", "title"));
 		handlers.add(new CsdnAddressHandler("div"));
-		return new CsdnHandler(handlers);
+		handlers.add(new CsdnContentHandler("div", "div", "intro", "content"));
+		return new BaseHandler(handlers);
 	}
 
 	public static class MyHtmlMapper extends DefaultHtmlMapper {

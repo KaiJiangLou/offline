@@ -1,4 +1,6 @@
-package cn.tingjiangzuo;
+package cn.tingjiangzuo.handler;
+
+import java.util.Map;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -6,9 +8,9 @@ import org.xml.sax.SAXException;
 public class CsdnTitleHandler extends AbstractBaseHandler {
 
 	private String secondElementName;
-	
-	public CsdnTitleHandler(String parsedElementName, String secondElementName) {
-		super(parsedElementName);
+
+	public CsdnTitleHandler(String parsedElementName, String secondElementName, String resultingKeyString) {
+		super(parsedElementName, resultingKeyString);
 		this.secondElementName = secondElementName;
 	}
 
@@ -25,13 +27,12 @@ public class CsdnTitleHandler extends AbstractBaseHandler {
 	@Override
 	public void startElement(String uri, String localName, String name,
 			Attributes atts) throws SAXException {
-		System.out.println(String.format("startElement: uri = %s,  localName = %s, name = %s.", uri, localName, name));
 		if (parsedElementName.equalsIgnoreCase(localName)) {
 			if (attributesMatched(uri, localName, name, atts)) {
-				begin = true;
 				numLayers = 1;
 			}
-		} else if (begin && secondElementName.equalsIgnoreCase(localName)) {
+		} else if (numLayers > 0
+				&& secondElementName.equalsIgnoreCase(localName)) {
 			numLayers = 2;
 		}
 	}
@@ -48,10 +49,10 @@ public class CsdnTitleHandler extends AbstractBaseHandler {
 	@Override
 	public void endElement(String uri, String localName, String name)
 			throws SAXException {
-		System.out.println(String.format("endElement: uri = %s,  localName = %s, name = %s.", uri, localName, name));
-		if (parsedElementName.equalsIgnoreCase(localName) || secondElementName.equalsIgnoreCase(localName)) {
-			begin = false;
+		if (parsedElementName.equalsIgnoreCase(localName)
+				|| secondElementName.equalsIgnoreCase(localName)) {
 			numLayers = 0;
 		}
 	}
+
 }

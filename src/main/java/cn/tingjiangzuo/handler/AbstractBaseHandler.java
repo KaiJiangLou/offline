@@ -1,4 +1,7 @@
-package cn.tingjiangzuo;
+package cn.tingjiangzuo.handler;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.tika.sax.ContentHandlerDecorator;
 import org.xml.sax.Attributes;
@@ -7,27 +10,29 @@ import org.xml.sax.SAXException;
 public abstract class AbstractBaseHandler extends ContentHandlerDecorator {
 
 	protected String parsedElementName;
-	protected boolean begin = false;
+	protected String resultingKeyString;
+	
+	// protected boolean begin = false;
 	protected int numLayers;
 	protected StringBuilder stringBuilder = new StringBuilder();
 
-	public AbstractBaseHandler (String parsedElementName) {
+	protected Map<String, String> resultingMap = new HashMap<>();
+
+	public AbstractBaseHandler(String parsedElementName, String resultingKeyString) {
 		this.parsedElementName = parsedElementName;
+		this.resultingKeyString = resultingKeyString;
 	}
 
-	public abstract boolean attributesMatched(String uri, String localName, String name,
-			Attributes atts);
-	
+	public abstract boolean attributesMatched(String uri, String localName,
+			String name, Attributes atts);
+
 	@Override
 	public void startElement(String uri, String localName, String name,
 			Attributes atts) throws SAXException {
-		System.out.println(String.format("startElement: uri = %s,  localName = %s, name = %s.", uri, localName, name));
 		if (parsedElementName.equalsIgnoreCase(localName)) {
 			if (attributesMatched(uri, localName, name, atts)) {
-				begin = true;
-				numLayers = 0;
-			}
-			if (begin) {
+				numLayers = 1;
+			} else if (numLayers > 0) {
 				++numLayers;
 			}
 		}
@@ -36,7 +41,7 @@ public abstract class AbstractBaseHandler extends ContentHandlerDecorator {
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
-		if (!begin) {
+		if (numLayers <= 0) {
 			return;
 		}
 		stringBuilder.append(ch, start, length);
@@ -45,23 +50,27 @@ public abstract class AbstractBaseHandler extends ContentHandlerDecorator {
 	@Override
 	public void endElement(String uri, String localName, String name)
 			throws SAXException {
-		System.out.println(String.format("endElement: uri = %s,  localName = %s, name = %s.", uri, localName, name));
 		if (parsedElementName.equalsIgnoreCase(localName)) {
 			--numLayers;
-			if (numLayers <= 0) {
-				begin = false;
-			}
 		}
+	}
+
+	/**
+	 * A hook function, which should only be called when the whole webpage is parsed entirely.
+	 * @return
+	 */
+	public Map<String, String> getParsedResults() {
+		if (!resultingMap.isEmpty()) {
+			return resultingMap;
+		}
+		resultingMap.put(resultingKeyString, stringBuilder.toString().trim());
+		return resultingMap;
 	}
 
 	@Override
 	public String toString() {
-		String str = stringBuilder.toString();
-		String[] lines = str.split("\n");
-		StringBuilder newBuilder = new StringBuilder();
-		for (String line : lines) {
-			newBuilder.append(line.trim() + "\n");
-		}
-		return newBuilder.toString();
+		return getParsedResults().toString();
 	}
+
+
 }
