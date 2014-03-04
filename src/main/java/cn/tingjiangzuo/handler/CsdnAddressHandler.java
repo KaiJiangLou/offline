@@ -1,9 +1,12 @@
 package cn.tingjiangzuo.handler;
 
+import java.text.ParseException;
 import java.util.Map;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+
+import cn.tingjiangzuo.FunctionUtil;
 
 public class CsdnAddressHandler extends AbstractBaseHandler {
 
@@ -66,7 +69,14 @@ public class CsdnAddressHandler extends AbstractBaseHandler {
 					startTimeString.length() - endTimeString.length())
 					+ endTimeString;
 		}
-		resultingMap.put("start_time", startTimeString);
-		resultingMap.put("end_time", endTimeString);
+
+		try {
+			resultingMap.put("start_time",
+					FunctionUtil.parseDateString(startTimeString));
+			resultingMap.put("end_time",
+					FunctionUtil.parseDateString(endTimeString));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 }
