@@ -72,9 +72,9 @@ public class CsdnAddressHandler extends AbstractBaseHandler {
 
 		try {
 			resultingMap.put("start_time",
-					FunctionUtil.parseDateString(startTimeString));
+					"" + FunctionUtil.parseDateString2TS(startTimeString));
 			resultingMap.put("end_time",
-					FunctionUtil.parseDateString(endTimeString));
+					"" + FunctionUtil.parseDateString2TS(endTimeString));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

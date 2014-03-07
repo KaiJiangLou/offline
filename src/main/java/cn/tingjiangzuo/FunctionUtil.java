@@ -7,6 +7,11 @@ import java.util.regex.Pattern;
 
 public class FunctionUtil {
 
+	public static int parseDateString2TS(String dateStr) throws ParseException {
+		Date date = FunctionUtil.parsDateString2Date(dateStr);
+		return (int) (date.getTime() / 1000);
+	}
+
 	/**
 	 * Parse a non-regular date string to a regular date string with format "yyyy-MM-dd HH:mm".
 	 * <br> For example, <br> 
