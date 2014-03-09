@@ -1,0 +1,19 @@
+[
+{
+    "crawl_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn",
+    "data_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data",
+    "site_prefix": "http://huiyi.csdn.net/meeting/info",
+    "site_seed": "http://huiyi.csdn.net/meeting",
+    "max_depth_crawling": "1",
+    "live": "false"
+},
+{
+    "crawl_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/baidu_salon",
+    "data_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/baidu_salon/data",
+    "site_prefix": "http://www.infoq.com",
+    "site_seed": "http://www.infoq.com/cn/zones/baidu-salon/",
+    "max_depth_crawling": "1",
+    "live": "true"
+}
+
+]

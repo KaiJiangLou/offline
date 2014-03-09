@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.json.JSONObject;
@@ -26,15 +27,15 @@ public class CsdnCrawler extends WebCrawler {
 					+ "|png|tiff?|mid|mp2|mp3|mp4"
 					+ "|wav|avi|mov|mpeg|ram|m4v|pdf"
 					+ "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
-	public static final String CRAWL_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn";
+	/*public static final String CRAWL_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn";
 	public static final String DATA_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data";
 	public static final String SITE_PREFIX = "http://huiyi.csdn.net/meeting/info";
-	public static final String SITE_SEED = "http://huiyi.csdn.net/meeting";
+	public static final String SITE_SEED = "http://huiyi.csdn.net/meeting"; */
 
 	@Override
 	public boolean shouldVisit(WebURL url) {
 		String href = url.getURL().toLowerCase();
-		return !FILTERS.matcher(href).matches() && href.startsWith(SITE_PREFIX);
+		return !FILTERS.matcher(href).matches() && href.startsWith(getSitePrefix());
 	}
 
 	@Override
@@ -62,7 +63,7 @@ public class CsdnCrawler extends WebCrawler {
 
 	private void writeToFile(Page page, HtmlParseData htmlParseData)
 			throws Exception {
-		File dataDir = new File(DATA_STORAGE_FOLDER);
+		File dataDir = new File(getDataStorageFolder());
 		if (!dataDir.exists()) {
 			if (!dataDir.mkdir()) {
 				throw new Exception("Couldn't create this folder: "
@@ -78,5 +79,17 @@ public class CsdnCrawler extends WebCrawler {
 		BufferedWriter writer = new BufferedWriter(new FileWriter(dataFile));
 		writer.write(theWebPage.toString());
 		writer.close();
+	}
+
+	@SuppressWarnings("unchecked")
+	private String getSitePrefix() {
+		return ((Map<String, String>) getMyController().getCustomData())
+				.get(Controller.SITE_PREFIX_KEY_NAME);
+	}
+
+	@SuppressWarnings("unchecked")
+	private String getDataStorageFolder() {
+		return ((Map<String, String>) getMyController().getCustomData())
+				.get(Controller.DATA_STORAGE_FOLDER_KEY_NAME);
 	}
 }

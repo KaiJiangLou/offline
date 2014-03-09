@@ -25,6 +25,19 @@ public class DateFormatTest {
 		System.out.println(Arrays.toString(realResults));
 		assertArrayEquals(expectedResults, realResults);
 	}
+	@Test
+	public void testDataFormatTS2() throws JSONException, ParseException {
+		String[] dateStrs = new String[] { "2012年3月2日（周六）13:20", "2012年3月2日（周六）13:20:52" };
+		int[] expectedResults = new int[] { 1330665600, 1330665652 };
+		int[] realResults = new int[expectedResults.length];
+		int i = 0;
+		for (String dateStr : dateStrs) {
+			realResults[i++] = FunctionUtil.parseDateString2TS(dateStr);
+
+		}
+		System.out.println(Arrays.toString(realResults));
+		assertArrayEquals(expectedResults, realResults);
+	}
 
 	@Test
 	public void testDataFormat() throws JSONException, ParseException {

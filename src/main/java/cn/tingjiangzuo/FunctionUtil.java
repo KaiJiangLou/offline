@@ -3,7 +3,10 @@ package cn.tingjiangzuo;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Pattern;
+
+import com.google.common.collect.Lists;
 
 public class FunctionUtil {
 
@@ -41,6 +44,7 @@ public class FunctionUtil {
 		String sepRegEx = "[^0-9]";
 		Pattern pattern = Pattern.compile(sepRegEx);
 		String[] terms = pattern.split(theDateStr);
+		terms = removeEmptyElements(terms);
 		String formatStr = "yyyy-MM-dd";
 		String dateStr = String
 				.format("%s-%s-%s", terms[0], terms[1], terms[2]);
@@ -61,4 +65,15 @@ public class FunctionUtil {
 		return date;
 	}
 
+	private static String[] removeEmptyElements(String[] terms) {
+		List<String> nonEmptyList = Lists.newArrayList();
+		for (String term : terms) {
+			if (!term.isEmpty()) {
+				nonEmptyList.add(term);
+			}
+		}
+		String[] resultStrings = new String[nonEmptyList.size()];
+		resultStrings = nonEmptyList.toArray(resultStrings);
+		return resultStrings;
+	}
 }

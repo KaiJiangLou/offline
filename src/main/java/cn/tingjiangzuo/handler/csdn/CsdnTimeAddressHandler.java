@@ -1,4 +1,4 @@
-package cn.tingjiangzuo.handler;
+package cn.tingjiangzuo.handler.csdn;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -7,12 +7,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import cn.tingjiangzuo.FunctionUtil;
+import cn.tingjiangzuo.handler.AbstractBaseHandler;
 
-public class CsdnAddressHandler extends AbstractBaseHandler {
+public class CsdnTimeAddressHandler extends AbstractBaseHandler {
 
 	private boolean alreadyRead;
 
-	public CsdnAddressHandler(String parsedElementName) {
+	public CsdnTimeAddressHandler(String parsedElementName) {
 		super(parsedElementName, "");
 	}
 

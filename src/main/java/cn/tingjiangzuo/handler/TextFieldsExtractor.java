@@ -20,6 +20,7 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
@@ -30,9 +31,12 @@ import org.apache.tika.parser.html.HtmlMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import cn.tingjiangzuo.handler.ExtractorUtils.WebSite;
+import cn.tingjiangzuo.handler.csdn.CsdnContentHandler;
+import cn.tingjiangzuo.handler.csdn.CsdnTimeAddressHandler;
+import cn.tingjiangzuo.handler.csdn.CsdnTitleHandler;
 
 import com.google.common.collect.Lists;
 
@@ -40,7 +44,10 @@ import edu.uci.ics.crawler4j.url.WebURL;
 
 public class TextFieldsExtractor {
 
-    private static final Logger log = LoggerFactory.getLogger(TextFieldsExtractor.class);
+	// private static final Log log =
+	// LogFactory.getLog(TextFieldsExtractor.class);
+	private static final Logger log = Logger
+			.getLogger(TextFieldsExtractor.class);
 
 	public static String INPUT_DIR_OPTION = "input";
 	public static String OUTPUT_DIR_OPTION = "output";
@@ -55,7 +62,11 @@ public class TextFieldsExtractor {
 		textFieldsExtractor.outputDir = cmdlLine
 				.getOptionValue(OUTPUT_DIR_OPTION);
 		// Parser argsParser = new parser
-		textFieldsExtractor.extractFieldsFromFiles();
+
+		WebSite[] webSites = new WebSite[] { WebSite.BaiduSalon };
+		for (WebSite webSite : webSites) {
+			textFieldsExtractor.extractFieldsFromFiles(webSite);
+		}
 	}
 
 	private static CommandLine generateCommandLine(String[] args)
@@ -70,15 +81,16 @@ public class TextFieldsExtractor {
 		return cmdLine;
 	}
 
-	public void extractFieldsFromFiles() throws FileNotFoundException,
-			JSONException, Exception {
-		File inputDir = new File(this.inputDir);
+	public void extractFieldsFromFiles(WebSite webSite)
+			throws FileNotFoundException, JSONException, Exception {
+		// File inputDir = new File(this.inputDir);
+		File inputDir = new File(ExtractorUtils.getInputDir(webSite));
 		checkInputDir(inputDir);
 		File outputDir = new File(this.outputDir);
 		checkOutputDir(outputDir);
 
 		File[] inputFiles = inputDir.listFiles(new FileFilter() {
-			
+
 			@Override
 			public boolean accept(File pathname) {
 				if (pathname.getName().startsWith(".")) {
@@ -89,9 +101,10 @@ public class TextFieldsExtractor {
 		});
 
 		for (File f : inputFiles) {
-			log.info("Processing file {} ...", f.toString());
+			log.info(String.format("Processing file %s ...", f.toString()));
 			try {
-				Map<String, String> resultingMap = extractFieldsFromOneFile(f);
+				Map<String, String> resultingMap = extractFieldsFromOneFile(f,
+						webSite);
 				saveToFile(resultingMap);
 			} catch (Exception e) {
 				System.out.println(f.getName());
@@ -117,7 +130,7 @@ public class TextFieldsExtractor {
 		}
 	}
 
-	private Map<String, String> extractFieldsFromOneFile(File f)
+	private Map<String, String> extractFieldsFromOneFile(File f, WebSite webSite)
 			throws FileNotFoundException, JSONException {
 		JSONObject jsonObject = new JSONObject(new JSONTokener(
 				new FileReader(f)));
@@ -132,7 +145,7 @@ public class TextFieldsExtractor {
 			// metadata.set(Metadata.RESOURCE_NAME_KEY, f.getName());
 			is = new ByteArrayInputStream(content.getBytes("UTF-8"));
 			// ContentHandler handler = new BodyContentHandler();
-			BaseHandler handler = initHandler();
+			BaseHandler handler = initHandler(webSite);
 			ParseContext context = new ParseContext();
 			context.set(Parser.class, parser);
 			context.set(HtmlMapper.class, new MyHtmlMapper());
@@ -156,18 +169,16 @@ public class TextFieldsExtractor {
 		return resultingFieldMap;
 	}
 
-	private BaseHandler initHandler() {
-		List<AbstractBaseHandler> handlers = Lists.newArrayList();
-		handlers.add(new CsdnTitleHandler("div", "h1", "title"));
-		handlers.add(new CsdnAddressHandler("div"));
-		handlers.add(new CsdnContentHandler("div", "div", "intro", "content"));
+	private BaseHandler initHandler(WebSite webSite) {
+		List<AbstractBaseHandler> handlers = ExtractorUtils
+				.getHandlers(webSite);
 		return new BaseHandler(handlers);
 	}
 
 	private void saveToFile(Map<String, String> resultingMap)
 			throws IOException {
 		WebURL url = new WebURL();
-		//System.out.println(resultingMap.toString());
+		// System.out.println(resultingMap.toString());
 		url.setURL(resultingMap.get("url"));
 		String fileName = url.getPath();
 		fileName = fileName.replaceAll("/", "_");
@@ -180,14 +191,18 @@ public class TextFieldsExtractor {
 
 	public static class MyHtmlMapper extends DefaultHtmlMapper {
 
+		private Set<String> additionalSafeElems = new HashSet<String>();
 		private Set<String> additionalSafeAttrs = new HashSet<String>();
 
 		public MyHtmlMapper() {
+			additionalSafeAttrs.add("div");
+
 			additionalSafeAttrs.add("id");
 			additionalSafeAttrs.add("class");
-
+			additionalSafeAttrs.add("style");
 		}
 
+		@Override
 		public String mapSafeElement(String name) {
 			if ("DIV".equalsIgnoreCase(name)) {
 				return "div";
@@ -198,12 +213,20 @@ public class TextFieldsExtractor {
 			return super.mapSafeElement(name);
 		}
 
+		@Override
 		public String mapSafeAttribute(String eleName, String attrName) {
-			if (eleName.equals("div") && additionalSafeAttrs.contains(attrName)) {
+			if ((additionalSafeElems.contains(eleName) || mapSafeElement(eleName
+					.toUpperCase()) != null)
+					&& additionalSafeAttrs.contains(attrName)) {
 				return attrName;
 			} else {
 				return super.mapSafeAttribute(eleName, attrName);
 			}
+		}
+
+		@Override
+		public boolean isDiscardElement(String name) {
+			return false;
 		}
 	}
 }
