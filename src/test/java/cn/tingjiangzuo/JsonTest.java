@@ -3,14 +3,21 @@ package cn.tingjiangzuo;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.*;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONStringer;
 import org.junit.Test;
 
-import com.sleepycat.je.rep.monitor.NewMasterEvent;
-
 public class JsonTest {
+
+	@Test
+	public void testEmptyString() throws JSONException {
+		String str = "";
+		assertTrue(str.isEmpty());
+		assertTrue(!str.equals(" "));
+	}
 
 	@Test
 	public void testJson() throws JSONException {

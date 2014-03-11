@@ -8,20 +8,20 @@ import org.apache.tika.sax.ContentHandlerDecorator;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public class BaseHandler extends ContentHandlerDecorator {
+public class CompositeHandler extends ContentHandlerDecorator {
 
-	private List<AbstractBaseHandler> handlers;
+	private List<GenericHandler> handlers;
 
-	private Map<String, String> resultingMap = new HashMap<>();
+	protected Map<String, String> resultingMap = new HashMap<>();
 
-	public BaseHandler(List<AbstractBaseHandler> handlers) {
+	public CompositeHandler(List<GenericHandler> handlers) {
 		this.handlers = handlers;
 	}
 
 	@Override
 	public void startElement(String uri, String localName, String name,
 			Attributes atts) throws SAXException {
-		for (AbstractBaseHandler handler : handlers) {
+		for (GenericHandler handler : handlers) {
 			handler.startElement(uri, localName, name, atts);
 		}
 	}
@@ -29,7 +29,7 @@ public class BaseHandler extends ContentHandlerDecorator {
 	@Override
 	public void characters(char[] ch, int start, int length)
 			throws SAXException {
-		for (AbstractBaseHandler handler : handlers) {
+		for (GenericHandler handler : handlers) {
 			handler.characters(ch, start, length);
 		}
 	}
@@ -37,7 +37,7 @@ public class BaseHandler extends ContentHandlerDecorator {
 	@Override
 	public void endElement(String uri, String localName, String name)
 			throws SAXException {
-		for (AbstractBaseHandler handler : handlers) {
+		for (GenericHandler handler : handlers) {
 			handler.endElement(uri, localName, name);
 		}
 	}
@@ -46,7 +46,7 @@ public class BaseHandler extends ContentHandlerDecorator {
 		if (!resultingMap.isEmpty()) {
 			return resultingMap;
 		}
-		for (AbstractBaseHandler handler : handlers) {
+		for (GenericHandler handler : handlers) {
 			resultingMap.putAll(handler.getParsedResults());
 		}
 		return resultingMap;

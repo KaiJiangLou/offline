@@ -27,21 +27,32 @@ public class CsdnCrawler extends WebCrawler {
 					+ "|png|tiff?|mid|mp2|mp3|mp4"
 					+ "|wav|avi|mov|mpeg|ram|m4v|pdf"
 					+ "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
-	/*public static final String CRAWL_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn";
-	public static final String DATA_STORAGE_FOLDER = "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data";
-	public static final String SITE_PREFIX = "http://huiyi.csdn.net/meeting/info";
-	public static final String SITE_SEED = "http://huiyi.csdn.net/meeting"; */
+
+	/*
+	 * public static final String CRAWL_STORAGE_FOLDER =
+	 * "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn"; public static
+	 * final String DATA_STORAGE_FOLDER =
+	 * "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data"; public
+	 * static final String SITE_PREFIX = "http://huiyi.csdn.net/meeting/info";
+	 * public static final String SITE_SEED = "http://huiyi.csdn.net/meeting";
+	 */
 
 	@Override
 	public boolean shouldVisit(WebURL url) {
 		String href = url.getURL().toLowerCase();
-		return !FILTERS.matcher(href).matches() && href.startsWith(getSitePrefix());
+		return !FILTERS.matcher(href).matches()
+				&& href.startsWith(getLinkFollowingSitePrefix());
 	}
 
 	@Override
 	public void visit(Page page) {
 		String url = page.getWebURL().getURL();
-		System.out.println("URL: " + url);
+		System.out.print("URL: " + url);
+		if (!url.startsWith(getLinkStoringSitePrefix())) {
+			System.out.println("");
+			return;
+		}
+		System.out.println("...... visited!");
 
 		if (page.getParseData() instanceof HtmlParseData) {
 			HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
@@ -49,10 +60,12 @@ public class CsdnCrawler extends WebCrawler {
 			String html = htmlParseData.getHtml();
 			List<WebURL> links = htmlParseData.getOutgoingUrls();
 
-			System.out.println("Text length: " + text.length());
-			System.out.println("Html length: " + html.length());
-			System.out.println("Number of outgoing links: " + links.size());
-			System.out.println(htmlParseData.getText());
+			/*
+			 * System.out.println("Text length: " + text.length());
+			 * System.out.println("Html length: " + html.length());
+			 * System.out.println("Number of outgoing links: " + links.size());
+			 */
+			// System.out.println(htmlParseData.getText());
 			try {
 				writeToFile(page, htmlParseData);
 			} catch (Exception e) {
@@ -81,15 +94,21 @@ public class CsdnCrawler extends WebCrawler {
 		writer.close();
 	}
 
-	@SuppressWarnings("unchecked")
-	private String getSitePrefix() {
-		return ((Map<String, String>) getMyController().getCustomData())
-				.get(Controller.SITE_PREFIX_KEY_NAME);
+	private String getLinkFollowingSitePrefix() {
+		return getCustomData(Controller.LINK_FOLLOWING_PREFIX_KEY_NAME);
+	}
+
+	private String getLinkStoringSitePrefix() {
+		return getCustomData(Controller.LINK_STORING_PREFIX_KEY_NAME);
+	}
+
+	private String getDataStorageFolder() {
+		return getCustomData(Controller.DATA_STORAGE_FOLDER_KEY_NAME);
 	}
 
 	@SuppressWarnings("unchecked")
-	private String getDataStorageFolder() {
+	private String getCustomData(String key) {
 		return ((Map<String, String>) getMyController().getCustomData())
-				.get(Controller.DATA_STORAGE_FOLDER_KEY_NAME);
+				.get(key);
 	}
 }

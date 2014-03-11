@@ -7,14 +7,14 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import cn.tingjiangzuo.FunctionUtil;
-import cn.tingjiangzuo.handler.AbstractBaseHandler;
+import cn.tingjiangzuo.handler.GenericHandler;
 
-public class CsdnTimeAddressHandler extends AbstractBaseHandler {
+public class CsdnTimeAddressHandler extends GenericHandler {
 
 	private boolean alreadyRead;
 
 	public CsdnTimeAddressHandler(String parsedElementName) {
-		super(parsedElementName, "");
+		super(parsedElementName, "class", "adress", "");
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class CsdnTimeAddressHandler extends AbstractBaseHandler {
 			if (line.startsWith("时间：")) {
 				parseStartAndEndTime(line.substring("时间：".length()));
 			} else if (line.startsWith("地点：")) {
-				resultingMap.put("address", line.substring("时间：".length()));
+				resultingMap.put("address", line.substring("地点：".length()));
 			}
 		}
 		return resultingMap;
@@ -60,11 +60,11 @@ public class CsdnTimeAddressHandler extends AbstractBaseHandler {
 
 	private void parseStartAndEndTime(String line) {
 		String[] startAndEndTime = line.split("-");
-		String startTimeString = startAndEndTime[0].trim();
-		String endTimeString = "~";
-		if (startAndEndTime.length > 1) {
-			endTimeString = startAndEndTime[1].trim();
+		if (startAndEndTime.length < 2) {
+			return;
 		}
+		String startTimeString = startAndEndTime[0].trim();
+		String endTimeString = startAndEndTime[1].trim();
 		if (endTimeString.length() < startTimeString.length()) {
 			endTimeString = startTimeString.substring(0,
 					startTimeString.length() - endTimeString.length())
@@ -72,10 +72,10 @@ public class CsdnTimeAddressHandler extends AbstractBaseHandler {
 		}
 
 		try {
-			resultingMap.put("start_time",
-					"" + FunctionUtil.parseDateString2TS(startTimeString));
-			resultingMap.put("end_time",
-					"" + FunctionUtil.parseDateString2TS(endTimeString));
+			int timeStamp = FunctionUtil.parseDateString2TS(startTimeString);
+			resultingMap.put("start_time", "" + timeStamp);
+			timeStamp = FunctionUtil.parseDateString2TS(endTimeString);
+			resultingMap.put("end_time", "" + timeStamp);
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}

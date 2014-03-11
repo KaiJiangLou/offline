@@ -3,9 +3,9 @@ package cn.tingjiangzuo.handler.csdn;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import cn.tingjiangzuo.handler.AbstractBaseHandler;
+import cn.tingjiangzuo.handler.GenericHandler;
 
-public class CsdnContentHandler extends AbstractBaseHandler {
+public class CsdnContentHandler extends GenericHandler {
 
 	private String startRecordingElementName;
 	private String startRecordingElementAttrName;
@@ -14,12 +14,12 @@ public class CsdnContentHandler extends AbstractBaseHandler {
 	public CsdnContentHandler(String parsedElementName,
 			String startRecordingElementName,
 			String startRecordingElementAttrName, String resultingKeyString) {
-		super(parsedElementName, resultingKeyString);
+		super(parsedElementName, "class", "con_nr_l", resultingKeyString);
 		this.startRecordingElementName = startRecordingElementName;
 		this.startRecordingElementAttrName = startRecordingElementAttrName;
 	}
 
-	@Override
+	/*@Override
 	public boolean attributesMatched(String uri, String localName, String name,
 			Attributes atts) {
 		if ("class".equals(atts.getLocalName(0))
@@ -27,7 +27,7 @@ public class CsdnContentHandler extends AbstractBaseHandler {
 			return true;
 		}
 		return false;
-	}
+	}*/
 
 	@Override
 	public void startElement(String uri, String localName, String name,

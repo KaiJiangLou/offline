@@ -34,11 +34,6 @@ import org.json.JSONTokener;
 import org.xml.sax.SAXException;
 
 import cn.tingjiangzuo.handler.ExtractorUtils.WebSite;
-import cn.tingjiangzuo.handler.csdn.CsdnContentHandler;
-import cn.tingjiangzuo.handler.csdn.CsdnTimeAddressHandler;
-import cn.tingjiangzuo.handler.csdn.CsdnTitleHandler;
-
-import com.google.common.collect.Lists;
 
 import edu.uci.ics.crawler4j.url.WebURL;
 
@@ -63,7 +58,8 @@ public class TextFieldsExtractor {
 				.getOptionValue(OUTPUT_DIR_OPTION);
 		// Parser argsParser = new parser
 
-		WebSite[] webSites = new WebSite[] { WebSite.BaiduSalon };
+		// TODO
+		WebSite[] webSites = new WebSite[] { WebSite.CSDN, WebSite.BaiduSalon, WebSite.DaHuoDong };
 		for (WebSite webSite : webSites) {
 			textFieldsExtractor.extractFieldsFromFiles(webSite);
 		}
@@ -105,6 +101,9 @@ public class TextFieldsExtractor {
 			try {
 				Map<String, String> resultingMap = extractFieldsFromOneFile(f,
 						webSite);
+				if (resultingMap.size() < 6) {//title, content, start_time, end_time, address, url
+					continue;
+				}
 				saveToFile(resultingMap);
 			} catch (Exception e) {
 				System.out.println(f.getName());
@@ -145,7 +144,7 @@ public class TextFieldsExtractor {
 			// metadata.set(Metadata.RESOURCE_NAME_KEY, f.getName());
 			is = new ByteArrayInputStream(content.getBytes("UTF-8"));
 			// ContentHandler handler = new BodyContentHandler();
-			BaseHandler handler = initHandler(webSite);
+			CompositeHandler handler = initHandler(webSite, metadata);
 			ParseContext context = new ParseContext();
 			context.set(Parser.class, parser);
 			context.set(HtmlMapper.class, new MyHtmlMapper());
@@ -169,10 +168,8 @@ public class TextFieldsExtractor {
 		return resultingFieldMap;
 	}
 
-	private BaseHandler initHandler(WebSite webSite) {
-		List<AbstractBaseHandler> handlers = ExtractorUtils
-				.getHandlers(webSite);
-		return new BaseHandler(handlers);
+	private CompositeHandler initHandler(WebSite webSite, Metadata metadata) {
+		return ExtractorUtils.getHandlers(webSite, metadata);
 	}
 
 	private void saveToFile(Map<String, String> resultingMap)

@@ -1,4 +1,4 @@
-package cn.tingjiangzuo.handler.baidusalon;
+package cn.tingjiangzuo.handler.dahuodong;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -9,15 +9,21 @@ import org.xml.sax.SAXException;
 import cn.tingjiangzuo.FunctionUtil;
 import cn.tingjiangzuo.handler.GenericHandler;
 
-public class BaiduSalonTimeAddressHandler extends GenericHandler {
+public class DaHuoDongTimeAddressHandler extends GenericHandler {
 
 	private String secondElementName;
+	private String secondAttributeName;
+	private String secondAttributeValue;
+
 	private int numLayersForRecording;
 
-	public BaiduSalonTimeAddressHandler(String parsedElementName,
-			String attrName, String attrValue, String secondElementName) {
+	public DaHuoDongTimeAddressHandler(String parsedElementName,
+			String attrName, String attrValue, String secondElementName,
+			String secondAttrName, String secondAttrValue) {
 		super(parsedElementName, attrName, attrValue, "");
 		this.secondElementName = secondElementName;
+		this.secondAttributeName = secondAttrName;
+		this.secondAttributeValue = secondAttrValue;
 	}
 
 	@Override
@@ -25,12 +31,23 @@ public class BaiduSalonTimeAddressHandler extends GenericHandler {
 			Attributes atts) throws SAXException {
 		super.startElement(uri, localName, name, atts);
 		if (numLayers > 0) {
-			if (secondElementName.equalsIgnoreCase(localName)) {
+			if (shouldRecord(uri, localName, name, atts)) {
 				numLayersForRecording = 1;
 			} else if (numLayersForRecording > 0) {
 				++numLayersForRecording;
 			}
 		}
+	}
+
+	private boolean shouldRecord(String uri, String localName, String name,
+			Attributes atts) {
+		if (secondElementName.equalsIgnoreCase(localName)
+				&& secondAttributeName.equals(atts.getLocalName(0))
+				&& atts.getValue(secondAttributeName).startsWith(
+						secondAttributeValue)) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -62,10 +79,10 @@ public class BaiduSalonTimeAddressHandler extends GenericHandler {
 		String[] lines = stringBuilder.toString().split("\n");
 		for (String line : lines) {
 			line = line.trim();
-			if (line.startsWith("时间：")) {
-				parseStartAndEndTime(line.substring("时间：".length()));
-			} else if (line.startsWith("地址：")) {
-				resultingMap.put("address", line.substring("地址：".length()));
+			if (line.startsWith("活动时间：")) {
+				parseStartAndEndTime(line.substring("活动时间：".length()));
+			} else if (line.startsWith("活动地址：")) {
+				resultingMap.put("address", line.substring("活动地址：".length()));
 			}
 		}
 		return resultingMap;
@@ -77,24 +94,14 @@ public class BaiduSalonTimeAddressHandler extends GenericHandler {
 	 * @param line
 	 */
 	private void parseStartAndEndTime(String line) {
-		String[] startAndEndTime = line.split("[,，]");
+		String[] startAndEndTime = line.split("[-]");
 		if (startAndEndTime.length < 2) {
 			return;
 		}
-		String firstPartString = startAndEndTime[0].trim();
-		String[] hourMinuteStrings = firstPartString.split("[~～]");
-		if (hourMinuteStrings.length < 2) {
-			return;
-		}
-		String startTimeString = startAndEndTime[1].trim()
-				+ hourMinuteStrings[0].trim();
-		String endTimeString = startAndEndTime[1].trim()
-				+ hourMinuteStrings[1].trim();
-
 		try {
-			int timeStamp = FunctionUtil.parseDateString2TS(startTimeString);
+			int timeStamp = FunctionUtil.parseDateString2TS(startAndEndTime[0]);
 			resultingMap.put("start_time", "" + timeStamp);
-			timeStamp = FunctionUtil.parseDateString2TS(endTimeString);
+			timeStamp = FunctionUtil.parseDateString2TS(startAndEndTime[1]);
 			resultingMap.put("end_time", "" + timeStamp);
 		} catch (ParseException e) {
 			e.printStackTrace();

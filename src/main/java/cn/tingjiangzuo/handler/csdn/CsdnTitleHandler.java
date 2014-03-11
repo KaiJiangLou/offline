@@ -3,18 +3,18 @@ package cn.tingjiangzuo.handler.csdn;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-import cn.tingjiangzuo.handler.AbstractBaseHandler;
+import cn.tingjiangzuo.handler.GenericHandler;
 
-public class CsdnTitleHandler extends AbstractBaseHandler {
+public class CsdnTitleHandler extends GenericHandler {
 
 	private String secondElementName;
 
 	public CsdnTitleHandler(String parsedElementName, String secondElementName, String resultingKeyString) {
-		super(parsedElementName, resultingKeyString);
+		super(parsedElementName, "class", "event_tit", resultingKeyString);
 		this.secondElementName = secondElementName;
 	}
 
-	@Override
+	/*@Override
 	public boolean attributesMatched(String uri, String localName, String name,
 			Attributes atts) {
 		if ("class".equals(atts.getLocalName(0))
@@ -22,7 +22,7 @@ public class CsdnTitleHandler extends AbstractBaseHandler {
 			return true;
 		}
 		return false;
-	}
+	}*/
 
 	@Override
 	public void startElement(String uri, String localName, String name,

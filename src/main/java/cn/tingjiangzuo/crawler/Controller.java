@@ -19,8 +19,9 @@ public class Controller {
 
 	public static String CRAWL_STORAGE_FOLDER_KEY_NAME = "crawl_storage_folder";
 	public static String DATA_STORAGE_FOLDER_KEY_NAME = "data_storage_folder";
-	public static String SITE_PREFIX_KEY_NAME = "site_prefix";
 	public static String SITE_SEED_KEY_NAME = "site_seed";
+	public static String LINK_FOLLOWING_PREFIX_KEY_NAME = "link_following_prefix";
+	public static String LINK_STORING_PREFIX_KEY_NAME = "link_storing_prefix";
 	public static String MAX_DEPTH_CRAWLING_KEY_NAME = "max_depth_crawling";
 	public static String LIVE_KEY_NAME = "live";
 
@@ -29,7 +30,7 @@ public class Controller {
 		JSONArray sourceArray = new JSONArray(new JSONTokener(
 				new FileReader(configFile)));
 		int length = sourceArray.length();
-			System.out.println(sourceArray.toString());
+		//System.out.println(sourceArray.toString());
 		for (int i = 0; i < length; ++i) {
 			crawlOneWebsite(sourceArray.getJSONObject(i));
 		}
@@ -43,7 +44,8 @@ public class Controller {
 		String siteSeed = websiteInfo.getString(SITE_SEED_KEY_NAME);
 		int maxDepthCrawling = websiteInfo.getInt(MAX_DEPTH_CRAWLING_KEY_NAME);
 		String dataStorageFolder = websiteInfo.getString(DATA_STORAGE_FOLDER_KEY_NAME);
-		String sitePrefix = websiteInfo.getString(SITE_PREFIX_KEY_NAME);
+		String linkFollowingPrefix = websiteInfo.getString(LINK_FOLLOWING_PREFIX_KEY_NAME);
+		String linkStoringPrefix = websiteInfo.getString(LINK_STORING_PREFIX_KEY_NAME);
 
 		int numberOfCrawlers = 3;
 
@@ -63,7 +65,8 @@ public class Controller {
 
 		Map<String, String> otherDataMap = new HashMap<>();
 		otherDataMap.put(DATA_STORAGE_FOLDER_KEY_NAME, dataStorageFolder);
-		otherDataMap.put(SITE_PREFIX_KEY_NAME, sitePrefix);
+		otherDataMap.put(LINK_FOLLOWING_PREFIX_KEY_NAME, linkFollowingPrefix);
+		otherDataMap.put(LINK_STORING_PREFIX_KEY_NAME, linkStoringPrefix);
 		controller.setCustomData(otherDataMap);
 
 		/*

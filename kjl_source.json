@@ -1,18 +1,32 @@
 [
 {
+    "website_id": "csdn",
     "crawl_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn",
     "data_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/csdn/data",
-    "site_prefix": "http://huiyi.csdn.net/meeting/info",
     "site_seed": "http://huiyi.csdn.net/meeting",
-    "max_depth_crawling": "1",
-    "live": "false"
+    "link_following_prefix": "http://huiyi.csdn.net/",
+    "link_storing_prefix": "http://huiyi.csdn.net/meeting/info",
+    "max_depth_crawling": "2",
+    "live": "true"
 },
 {
+    "website_id": "baidusalon",
     "crawl_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/baidu_salon",
     "data_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/baidu_salon/data",
-    "site_prefix": "http://www.infoq.com",
     "site_seed": "http://www.infoq.com/cn/zones/baidu-salon/",
+    "link_following_prefix": "http://www.infoq.com",
+    "link_storing_prefix": "http://www.infoq.com",
     "max_depth_crawling": "1",
+    "live": "true"
+},
+{
+    "website_id": "dahuodong",
+    "crawl_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/dahuodong",
+    "data_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/dahuodong/data",
+    "site_seed": "http://www.dahuodong.com",
+    "link_following_prefix": "http://www.dahuodong.com",
+    "link_storing_prefix": "http://www.dahuodong.com/event-",
+    "max_depth_crawling": "2",
     "live": "true"
 }
 
