@@ -59,7 +59,7 @@ public class TextFieldsExtractor {
 		// Parser argsParser = new parser
 
 		// TODO
-		WebSite[] webSites = new WebSite[] { WebSite.CSDN, WebSite.BaiduSalon, WebSite.DaHuoDong };
+		WebSite[] webSites = new WebSite[] { WebSite.DaHuoDong };
 		for (WebSite webSite : webSites) {
 			textFieldsExtractor.extractFieldsFromFiles(webSite);
 		}

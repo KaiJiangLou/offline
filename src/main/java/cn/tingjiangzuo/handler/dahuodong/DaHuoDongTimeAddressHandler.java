@@ -31,18 +31,19 @@ public class DaHuoDongTimeAddressHandler extends GenericHandler {
 			Attributes atts) throws SAXException {
 		super.startElement(uri, localName, name, atts);
 		if (numLayers > 0) {
-			if (shouldRecord(uri, localName, name, atts)) {
-				numLayersForRecording = 1;
-			} else if (numLayersForRecording > 0) {
-				++numLayersForRecording;
+			if (secondElementName.equalsIgnoreCase(localName)) {
+				if (shouldRecord(uri, localName, name, atts)) {
+					numLayersForRecording = 1;
+				} else if (numLayersForRecording > 0) {
+					++numLayersForRecording;
+				}
 			}
 		}
 	}
 
 	private boolean shouldRecord(String uri, String localName, String name,
 			Attributes atts) {
-		if (secondElementName.equalsIgnoreCase(localName)
-				&& secondAttributeName.equals(atts.getLocalName(0))
+		if (secondAttributeName.equals(atts.getLocalName(0))
 				&& atts.getValue(secondAttributeName).startsWith(
 						secondAttributeValue)) {
 			return true;
@@ -56,7 +57,11 @@ public class DaHuoDongTimeAddressHandler extends GenericHandler {
 		if (numLayersForRecording <= 0) {
 			return;
 		}
-		stringBuilder.append(ch, start, length);
+		String str = new String(ch, start, length);
+		str = str.replaceAll("\n", " ");
+		str = str.replaceAll("\\s{1,}", " ");
+		// stringBuilder.append(ch, start, length);
+		stringBuilder.append(str);
 	}
 
 	@Override
