@@ -28,6 +28,16 @@
     "link_storing_prefix": "http://www.dahuodong.com/event-",
     "max_depth_crawling": "2",
     "live": "true"
+},
+{
+    "website_id": "3wcoffee",
+    "crawl_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/wcoffee",
+    "data_storage_folder": "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/wcoffee/data",
+    "site_seed": "http://www.3wcoffee.com/event/e_1_0_0.html",
+    "link_following_prefix": "http://www.3wcoffee.com",
+    "link_storing_prefix": "http://www.3wcoffee.com/event",
+    "max_depth_crawling": "1",
+    "live": "true"
 }
 
 ]

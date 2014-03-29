@@ -12,13 +12,15 @@ import cn.tingjiangzuo.handler.csdn.CsdnTitleHandler;
 import cn.tingjiangzuo.handler.dahuodong.DaHuoDongCompositeHandler;
 import cn.tingjiangzuo.handler.dahuodong.DaHuoDongTimeAddressHandler;
 import cn.tingjiangzuo.handler.dahuodong.DaHuoDongTitleHandler;
+import cn.tingjiangzuo.handler.wcoffee.WCoffeeTimeAddressHandler;
+import cn.tingjiangzuo.handler.wcoffee.WCoffeeTitleHandler;
 
 import com.google.common.collect.Lists;
 
 public class ExtractorUtils {
 
 	enum WebSite {
-		CSDN, BaiduSalon, DaHuoDong
+		CSDN, BaiduSalon, DaHuoDong, WCoffee
 	}
 
 	public static String getInputDir(WebSite webSite) {
@@ -29,6 +31,8 @@ public class ExtractorUtils {
 			return "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/baidu_salon/data";
 		case DaHuoDong:
 			return "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/dahuodong/data";
+		case WCoffee:
+			return "/Users/king/Documents/WhatIHaveDone/KaiJiangLou/wcoffee/data";
 		default:
 			return "";
 		}
@@ -59,6 +63,12 @@ public class ExtractorUtils {
 			// for filtering out all non-free posts
 			handlers.add(new GenericHandler("div", "class", "prd_pri", filterKeyName));
 			compositeHandler = new DaHuoDongCompositeHandler(handlers, filterKeyName, "免费");
+			break;
+		case WCoffee:
+			handlers.add(new WCoffeeTitleHandler("div", "class", "acti_info", "h2"));
+			handlers.add(new GenericHandler("div", "class", "acti_detail", "content"));
+			handlers.add(new WCoffeeTimeAddressHandler("div", "class", "acti_info"));
+			compositeHandler = new CompositeHandler(handlers);
 			break;
 
 		default:

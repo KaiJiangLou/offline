@@ -59,6 +59,7 @@ public class TextFieldsExtractor {
 		// Parser argsParser = new parser
 
 		// TODO
+		//WebSite[] webSites = new WebSite[] { WebSite.CSDN, WebSite.BaiduSalon, WebSite.DaHuoDong, WebSite.WCoffee };
 		WebSite[] webSites = new WebSite[] { WebSite.DaHuoDong };
 		for (WebSite webSite : webSites) {
 			textFieldsExtractor.extractFieldsFromFiles(webSite);
@@ -192,7 +193,8 @@ public class TextFieldsExtractor {
 		private Set<String> additionalSafeAttrs = new HashSet<String>();
 
 		public MyHtmlMapper() {
-			additionalSafeAttrs.add("div");
+			additionalSafeElems.add("div");
+			additionalSafeElems.add("br");
 
 			additionalSafeAttrs.add("id");
 			additionalSafeAttrs.add("class");
@@ -203,6 +205,9 @@ public class TextFieldsExtractor {
 		public String mapSafeElement(String name) {
 			if ("DIV".equalsIgnoreCase(name)) {
 				return "div";
+			}
+			if ("BR".equalsIgnoreCase(name)) {
+				return "br";
 			}
 			/*
 			 * if ("BR".equalsIgnoreCase(name)) { return "br"; }

@@ -16,12 +16,6 @@ public class FunctionUtil {
 	}
 
 	/**
-	 * Parse a non-regular date string to a regular date string with format "yyyy-MM-dd HH:mm".
-	 * <br> For example, <br> 
-	 * "2012年3月2日" will return "2012-03-02 00:00"; <br> 
-	 * "2012年3月2日13点" will return "2012-03-02 13:00"; <br> 
-	 * "2012年3月2日13:20" will return "2012-03-02 13:20"; <br> 
-	 * "2012年3月2日13:20:50" will return "2012-03-02 13:20". <br> 
 	 * @param dateStr
 	 * @return
 	 * @throws ParseException
@@ -34,6 +28,12 @@ public class FunctionUtil {
 
 	/**
 	 * Parse a date string to a {@link Date}.
+	 * Parse a non-regular date string to a regular date string with format "yyyy-MM-dd HH:mm".
+	 * <br> For example, <br> 
+	 * "2012年3月2日" will return "2012-03-02 00:00"; <br> 
+	 * "2012年3月2日13点" will return "2012-03-02 13:00"; <br> 
+	 * "2012年3月2日13:20" will return "2012-03-02 13:20"; <br> 
+	 * "2012年3月2日13:20:50" will return "2012-03-02 13:20". <br> 
 	 * 
 	 * @param theDateStr
 	 * @return
@@ -41,6 +41,10 @@ public class FunctionUtil {
 	 */
 	public static Date parsDateString2Date(String theDateStr)
 			throws ParseException {
+		theDateStr = theDateStr.trim();
+		if (!startsWithYear(theDateStr)) {
+			theDateStr = getCurrentDate("yyyy")+"-"+theDateStr;
+		}
 		String sepRegEx = "[^0-9]";
 		Pattern pattern = Pattern.compile(sepRegEx);
 		String[] terms = pattern.split(theDateStr);
@@ -63,6 +67,17 @@ public class FunctionUtil {
 		SimpleDateFormat sdf = new SimpleDateFormat(formatStr);
 		Date date = sdf.parse(dateStr);
 		return date;
+	}
+
+	public static boolean startsWithYear(String oriDateStr) {
+		String paString = "^[1-2]{1}[0-9]{3}.*?$";
+		return Pattern.matches(paString, oriDateStr);
+	}
+
+	public static String getCurrentDate(String formatStr) {
+		Date curDate = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat(formatStr);
+		return sdf.format(curDate);
 	}
 
 	private static String[] removeEmptyElements(String[] terms) {
